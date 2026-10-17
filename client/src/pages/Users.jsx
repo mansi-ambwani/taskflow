@@ -9,6 +9,53 @@ import Pagination from '../components/Pagination.jsx';
 import Spinner from '../components/Spinner.jsx';
 import { formatDate, initials } from '../utils/format.js';
 
+// Shows the invite link admins share with new teammates.
+function InviteCard({ notify }) {
+  const [invite, setInvite] = useState(null);
+
+  useEffect(() => {
+    api.invite().then((r) => setInvite(r.data)).catch(() => setInvite({ enabled: false }));
+  }, []);
+
+  if (!invite) return null;
+
+  const link = invite.enabled
+    ? `${window.location.origin}/register?code=${encodeURIComponent(invite.inviteCode)}`
+    : `${window.location.origin}/register`;
+
+  async function copy(text, label) {
+    try {
+      await navigator.clipboard.writeText(text);
+      notify(`${label} copied`);
+    } catch {
+      notify('Could not copy — select the text and copy it manually', 'error');
+    }
+  }
+
+  return (
+    <section className="card invite-card">
+      <div>
+        <h3>Invite teammates</h3>
+        <p className="muted">
+          {invite.enabled
+            ? 'Only people with this link (or the code) can sign up and join your team.'
+            : 'Sign-up is open: anyone with the site link can join. Set INVITE_CODE on the server to restrict it.'}
+        </p>
+      </div>
+      <div className="invite-row">
+        <input readOnly value={link} onFocus={(e) => e.target.select()} aria-label="Invite link" />
+        <button className="btn btn-primary" onClick={() => copy(link, 'Invite link')}>Copy link</button>
+      </div>
+      {invite.enabled && (
+        <div className="invite-row">
+          <input readOnly value={invite.inviteCode} onFocus={(e) => e.target.select()} aria-label="Invite code" />
+          <button className="btn btn-ghost" onClick={() => copy(invite.inviteCode, 'Invite code')}>Copy code</button>
+        </div>
+      )}
+    </section>
+  );
+}
+
 // Admin-only page: see everyone, change roles, remove accounts.
 export default function Users() {
   const { user: me } = useAuth();
@@ -70,6 +117,8 @@ export default function Users() {
           <p className="muted">Manage roles and accounts.</p>
         </div>
       </div>
+
+      <InviteCard notify={notify} />
 
       <div className="card filters">
         <div className="search">

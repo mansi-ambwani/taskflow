@@ -1,5 +1,5 @@
 # Pushes the TaskFlow project to your GitHub repository. Run by double-clicking push-to-github.bat
-param([string]$RepoUrl = '', [string]$GitName = '', [string]$GitEmail = '')
+param([string]$RepoUrl = '', [string]$GitName = '', [string]$GitEmail = '', [string]$Message = 'TaskFlow: full-stack task management app (React, Node.js, Express, MySQL)')
 $ErrorActionPreference = 'Continue'
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $root
@@ -34,7 +34,7 @@ if ($staged | Where-Object { $_ -match 'node_modules/' }) { Log "STOPPED node_mo
 
 $count = ($staged | Measure-Object).Count
 if ($count -gt 0) {
-  git commit -m "TaskFlow: full-stack task management app (React, Node.js, Express, MySQL)" 2>&1 | Out-File -Append -FilePath $log -Encoding utf8
+  git commit -m "$Message" 2>&1 | Out-File -Append -FilePath $log -Encoding utf8
   Log "STEP2_OK committed $count files (.env and node_modules excluded)"
 } else { Log "STEP2_OK nothing new to commit" }
 git branch -M main 2>&1 | Out-Null

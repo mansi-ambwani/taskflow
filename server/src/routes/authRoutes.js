@@ -27,6 +27,7 @@ router.post(
       .isLength({ min: 8, max: 72 }).withMessage('Password must be 8–72 characters')
       .matches(/[A-Za-z]/).withMessage('Password must contain a letter')
       .matches(/\d/).withMessage('Password must contain a number'),
+    body('inviteCode').optional({ values: 'falsy' }).isString().isLength({ max: 200 }).withMessage('Invite code is too long'),
   ],
   validate,
   asyncHandler(ctrl.register)
@@ -41,5 +42,6 @@ router.post(
 );
 
 router.get('/me', authenticate, asyncHandler(ctrl.me));
+router.get('/config', asyncHandler(ctrl.config));
 
 module.exports = router;

@@ -21,3 +21,6 @@ Thumbs.db
 setup.log
 system-check.log
 push.log
+
+# Render settings (contains secrets)
+render.env

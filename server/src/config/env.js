@@ -17,6 +17,8 @@ module.exports = {
   port: Number(process.env.PORT) || 5000,
   nodeEnv: process.env.NODE_ENV || 'development',
   clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
+  // Empty = anyone can sign up. Set it to require an invite code at sign-up.
+  inviteCode: (process.env.INVITE_CODE || '').trim(),
   db: {
     host: process.env.DB_HOST,
     port: Number(process.env.DB_PORT) || 3306,

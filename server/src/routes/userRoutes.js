@@ -20,6 +20,7 @@ router.get(
   asyncHandler(ctrl.listUsers)
 );
 router.get('/options', asyncHandler(ctrl.userOptions));
+router.get('/invite', asyncHandler(ctrl.invite));
 router.patch('/:id/role', [idRule, body('role').isIn(['admin', 'member']).withMessage('Role must be admin or member')], validate, asyncHandler(ctrl.updateRole));
 router.delete('/:id', idRule, validate, asyncHandler(ctrl.deleteUser));
 

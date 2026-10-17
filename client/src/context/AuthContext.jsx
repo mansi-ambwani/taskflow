@@ -38,7 +38,10 @@ export function AuthProvider({ children }) {
   };
 
   const login = useCallback(async (email, password) => handleAuth(await api.login({ email, password })), []);
-  const register = useCallback(async (name, email, password) => handleAuth(await api.register({ name, email, password })), []);
+  const register = useCallback(
+    async (name, email, password, inviteCode) => handleAuth(await api.register({ name, email, password, inviteCode })),
+    []
+  );
 
   const value = useMemo(
     () => ({ user, loading, isAdmin: user?.role === 'admin', login, register, logout }),

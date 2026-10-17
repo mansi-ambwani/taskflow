@@ -42,6 +42,12 @@ exports.userOptions = async (req, res) => {
   res.json({ success: true, data: rows });
 };
 
+// GET /api/users/invite — admin only: the invite code to share with new teammates
+exports.invite = async (req, res) => {
+  const { inviteCode } = require('../config/env');
+  res.json({ success: true, data: { enabled: Boolean(inviteCode), inviteCode: inviteCode || null } });
+};
+
 // PATCH /api/users/:id/role
 exports.updateRole = async (req, res) => {
   const id = Number(req.params.id);

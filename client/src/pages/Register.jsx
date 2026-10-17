@@ -1,15 +1,25 @@
-import { useState } from 'react';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
+import { api } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import AuthShell from './AuthShell.jsx';
 
 export default function Register() {
   const { user, register } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' });
+  const [params] = useSearchParams();
+  const codeFromLink = params.get('code') || '';
+
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '', inviteCode: codeFromLink });
+  const [inviteRequired, setInviteRequired] = useState(false);
   const [errors, setErrors] = useState({});
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+
+  // Ask the API whether this team requires an invite code to join.
+  useEffect(() => {
+    api.authConfig().then((r) => setInviteRequired(r.data.inviteRequired)).catch(() => {});
+  }, []);
 
   if (user) return <Navigate to="/dashboard" replace />;
 
@@ -22,6 +32,7 @@ export default function Register() {
     if (form.password.length < 8) e.password = 'At least 8 characters';
     else if (!/[A-Za-z]/.test(form.password) || !/\d/.test(form.password)) e.password = 'Use letters and numbers';
     if (form.confirm !== form.password) e.confirm = 'Passwords do not match';
+    if (inviteRequired && !form.inviteCode.trim()) e.inviteCode = 'Enter the invite code from your team admin';
     setErrors(e);
     return !Object.keys(e).length;
   }
@@ -32,7 +43,7 @@ export default function Register() {
     setBusy(true);
     setError('');
     try {
-      await register(form.name.trim(), form.email, form.password);
+      await register(form.name.trim(), form.email, form.password, form.inviteCode.trim() || undefined);
       navigate('/dashboard', { replace: true });
     } catch (err) {
       if (err.details) setErrors(Object.fromEntries(err.details.map((d) => [d.field, d.message])));
@@ -41,9 +52,15 @@ export default function Register() {
     }
   }
 
+  const showInviteField = inviteRequired && !codeFromLink;
+
   return (
-    <AuthShell title="Create your account" subtitle="New accounts join as team members">
+    <AuthShell
+      title="Create your account"
+      subtitle={codeFromLink ? "You've been invited to join the team" : 'New accounts join as team members'}
+    >
       <form onSubmit={handleSubmit} className="form" noValidate>
+        {codeFromLink && inviteRequired && <p className="note">Invite code applied from your link.</p>}
         <label className="field">
           <span>Full name</span>
           <input autoComplete="name" value={form.name} onChange={set('name')} autoFocus />
@@ -66,6 +83,13 @@ export default function Register() {
             {errors.confirm && <small className="field-error">{errors.confirm}</small>}
           </label>
         </div>
+        {showInviteField && (
+          <label className="field">
+            <span>Invite code</span>
+            <input value={form.inviteCode} onChange={set('inviteCode')} autoComplete="off" spellCheck="false" />
+            {errors.inviteCode && <small className="field-error">{errors.inviteCode}</small>}
+          </label>
+        )}
         {error && <div className="alert">{error}</div>}
         <button className="btn btn-primary btn-block" disabled={busy}>{busy ? 'Creating account…' : 'Create account'}</button>
       </form>

@@ -48,6 +48,8 @@ export const api = {
   login: (body) => request('/auth/login', { method: 'POST', body }),
   register: (body) => request('/auth/register', { method: 'POST', body }),
   me: () => request('/auth/me'),
+  authConfig: () => request('/auth/config'),
+  invite: () => request('/users/invite'),
 
   listTasks: (params) => request('/tasks', { params }),
   createTask: (body) => request('/tasks', { method: 'POST', body }),

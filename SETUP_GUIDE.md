@@ -190,6 +190,7 @@ You'll get a free public link like `https://taskflow-xxxx.onrender.com`.
    | `ADMIN_EMAIL` | your admin email |
    | `ADMIN_PASSWORD` | your admin password |
    | `SEED_DEMO_DATA` | `true` |
+   | `INVITE_CODE` | click **Generate** (only people with your invite link can then sign up) |
    | `CLIENT_URL` | leave blank for now |
 
 5. Click **Create Web Service** and wait for the deploy to show **Live**. Then copy your `https://….onrender.com` URL, set it as `CLIENT_URL`, and save.
@@ -197,6 +198,14 @@ You'll get a free public link like `https://taskflow-xxxx.onrender.com`.
 **Good to know**
 - On Render's free plan, the app goes to sleep after 15 minutes with no visitors. The next visit takes about a minute to wake it up. Open the link a minute before you demo it.
 - Aiven may power off a free database that has no activity, after sending you a notification. You can switch it back on from the Aiven console.
+
+---
+
+## Inviting your team
+
+- Leave `INVITE_CODE` empty and anyone with the site link can sign up.
+- Set `INVITE_CODE` (in `server/.env` locally, or in Render's Environment settings for the live site) to make sign-up invite-only.
+- Log in as admin and open **Team**. The **Invite teammates** card has a **Copy link** button. Send that link to your friends; the code is already inside it.
 
 ---
 

@@ -1,13 +1,31 @@
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const { pool } = require('../config/db');
 const { signToken } = require('../middleware/auth');
+const { inviteCode } = require('../config/env');
 const ApiError = require('../utils/ApiError');
 
 const publicUser = (u) => ({ id: u.id, name: u.name, email: u.email, role: u.role });
 
+// Constant-time comparison so the invite code can't be guessed character by character from response timing.
+function inviteMatches(given) {
+  const a = crypto.createHash('sha256').update(String(given || '')).digest();
+  const b = crypto.createHash('sha256').update(inviteCode).digest();
+  return crypto.timingSafeEqual(a, b);
+}
+
+// GET /api/auth/config  — tells the sign-up page whether an invite code is required.
+exports.config = async (req, res) => {
+  res.json({ success: true, data: { inviteRequired: Boolean(inviteCode) } });
+};
+
 // POST /api/auth/register  — new accounts are always "member"; admins are promoted by an admin.
+// When INVITE_CODE is set, sign-up only works with that code (keeps strangers out of the team).
 exports.register = async (req, res) => {
   const { name, email, password } = req.body;
+  if (inviteCode && !inviteMatches(req.body.inviteCode)) {
+    throw new ApiError(403, 'INVALID_INVITE', 'Invalid or missing invite code. Ask your team admin for the invite link.');
+  }
   const [existing] = await pool.query('SELECT id FROM users WHERE email = ?', [email]);
   if (existing.length) throw ApiError.conflict('An account with this email already exists');
 

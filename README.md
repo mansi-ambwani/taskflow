@@ -18,6 +18,7 @@ TaskFlow is a responsive single-page app for small teams. **Admins** see the who
 | **Filtering & search** | Filter by status, priority, assignee and overdue. Full-text search (FULLTEXT index). Sort by date, due date, priority or title |
 | **Pagination** | Server-side `LIMIT/OFFSET` paging. The page of rows and the total count are fetched in parallel |
 | **Team management (admin)** | Search users, promote or demote roles, remove accounts |
+| **Invite-only sign-up** | Optional `INVITE_CODE`: new users can only join with the code. Admins copy a ready-made invite link from the Team page (code compared in constant time) |
 | **Security** | Input-sanitization middleware, express-validator rules, parameterized SQL, whitelisted `ORDER BY`, Helmet headers, rate limiting, CORS |
 | **Error handling** | A single error handler, so every error comes back in the same JSON shape |
 | **Responsive** | Sidebar layout on desktop. Off-canvas menu and card-style task list on phones |
@@ -92,9 +93,10 @@ All endpoints are under `/api`. Protected endpoints need the header `Authorizati
 
 | Method | Endpoint | Access | Description |
 |---|---|---|---|
-| POST | `/auth/register` | public | Create a member account, returns `{ user, token }` |
+| POST | `/auth/register` | public | Create a member account (needs `inviteCode` when `INVITE_CODE` is set), returns `{ user, token }` |
 | POST | `/auth/login` | public | Returns `{ user, token }` |
 | GET | `/auth/me` | logged in | Current user |
+| GET | `/auth/config` | public | `{ inviteRequired }` for the sign-up page |
 | GET | `/tasks` | logged in | List tasks (see query params below) |
 | GET | `/tasks/:id` | logged in | One task |
 | POST | `/tasks` | logged in | Create a task |
@@ -103,6 +105,7 @@ All endpoints are under `/api`. Protected endpoints need the header `Authorizati
 | GET | `/stats` | logged in | Dashboard numbers (team-wide for admins) |
 | GET | `/users` | admin | Paginated user list with task counts |
 | GET | `/users/options` | admin | `{id, name}` list for the assignee dropdown |
+| GET | `/users/invite` | admin | The invite code to share with new teammates |
 | PATCH | `/users/:id/role` | admin | `{ "role": "admin" \| "member" }` |
 | DELETE | `/users/:id` | admin | Remove a user |
 | GET | `/health` | public | Health check |

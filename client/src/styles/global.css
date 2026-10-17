@@ -327,3 +327,11 @@ nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
   .stat-value { font-size: 1.5rem; }
   .toast-stack { left: 16px; right: 16px; }
 }
+
+/* ───────── Invite card (Team page) ───────── */
+.invite-card { display: flex; flex-direction: column; gap: 12px; }
+.invite-card h3 { margin-bottom: 4px; }
+.invite-card p { margin: 0; }
+.invite-row { display: flex; gap: 10px; }
+.invite-row input { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.85rem; }
+@media (max-width: 640px) { .invite-row { flex-direction: column; } }
