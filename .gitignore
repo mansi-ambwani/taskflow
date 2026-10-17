@@ -1,0 +1,23 @@
+# dependencies
+node_modules/
+
+# secrets — never commit these
+.env
+.env.local
+.env.*.local
+
+# build output
+client/dist/
+
+# logs & OS junk
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Windows helper logs
+setup.log
+system-check.log
+push.log
